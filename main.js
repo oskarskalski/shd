@@ -3,6 +3,7 @@ const converter = require('json-2-csv')
 let titanic = require('./titanic/titanic.js');
 let density = require('./density/density.js');
 let nursery = require('./categorical/nursery.js');
+let airQuality = require('./real/air_quality.js');
 
 function main() {
     var args = process.argv;
@@ -36,11 +37,28 @@ function proxy(data, state) {
         }
             break;
         case "nursery": {
-            let mappedData = nursery.mapDataToObject2(data)
-            // let count = nursery.calculateNumberOfSpecificValues(mappedData);
-            let test = nursery.zxc(mappedData)
-            saveDataToCvsFile(test, "nursery2", true)
+            let mappedData = nursery.mapDataToObject(data)
+            let social = nursery.sumAllSocialConditionPerTarget(mappedData)
+            let finance = nursery.sumAllFinanceConditionPerTarget(mappedData)
+            saveDataToCvsFile(social, "social_sum_nursery", false)
+            saveDataToCvsFile(finance, "financial_sum_nursery", false)
         }
+        break;
+        case 'air_quality': {
+			let mappedData = airQuality.mapDataToObject(data);
+			let getAverageCOPerMonth = airQuality.calculateCOPerMonth(mappedData);
+			let getAverageBenzenPerMonth = airQuality.calculateAverageNMHCPerMonth(mappedData);
+			let getAverageTempearturePerMonth = airQuality.calculateAverageTemperaturePerMonth(mappedData);
+            let getAverageNOPerMonth = airQuality.calculateNOPerMonth(mappedData);
+            let calculateAverageCOByHoursAndMonth = airQuality.calculateAverageCODependingOnHourAndMonth(mappedData)
+			saveDataToCvsFile(getAverageCOPerMonth, 'avg_co', false);
+			saveDataToCvsFile(getAverageBenzenPerMonth, 'avg_benzen', false);
+			saveDataToCvsFile(getAverageTempearturePerMonth, 'avg_temperature', false);
+			saveDataToCvsFile(getAverageNOPerMonth, 'avg_no', false);
+			saveDataToCvsFile(calculateAverageCOByHoursAndMonth, 'avg_hour_month_co', false);
+		}
+        break;
+        default: console.log("Couldn't find a functionality for :" + state)
     }
 }
 

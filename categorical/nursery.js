@@ -1,4 +1,4 @@
-function mapDataToObject2(data) {
+function mapDataToObject(data) {
     let result = []
     data = data.split('\n')
     for (let i of data) {
@@ -34,77 +34,46 @@ function zxc(data){
     return temp
 }
 
-function calculateNumberOfSpecificValues(data, state){
-    data = filterByTarget(data, state)
-    let result = {
-        parents: {
-            usual: 0,
-            pretentious: 0,
-            great_pret: 0,
-        },
-        nursery: {
-            proper: 0,
-            less_proper: 0,
-            improper: 0,
-            critical: 0, 
-            very_crit: 0
-        },
-        children: {
-            '1': 0,
-            '2': 0,
-            '3': 0,
-            'more': 0
-        },
-        form: {
-            complete:0,
-            completed:0,
-            incomplete: 0,
-            foster: 0
-        },
-        housing: {
-            convenient: 0,
-            less_conv: 0,
-            critical: 0
-        },
-        finance: {
-            convenient: 0,
-            inconv: 0
-        },
-        social: {
-            nonprob: 0,
-            slightly_prob: 0,
-            problematic: 0,
-        },
-        health: {
-            recommended: 0,
-            not_recom: 0,
-            priority: 0
+
+function sumAllSocialConditionPerTarget(data){
+    let transformObject = data.map(obj => ({target: obj.target, value: obj.social}))
+    return sumAllRowsByFinalEvaluationAndAttribute(transformObject)
+}
+
+function sumAllFinanceConditionPerTarget(data){
+    let transformObject = data.map(obj => ({target: obj.target, value: obj.finance}))
+    return sumAllRowsByFinalEvaluationAndAttribute(transformObject)
+}
+
+function sumAllRowsByFinalEvaluationAndAttribute(data){
+    let result = {}
+    for(let i of data){
+        let obj = result[i.target]
+        if(obj === undefined){
+            let temp = {}
+            temp[i.value] = 1
+            result[i.target] = temp
+        }
+        else{
+            let temp = obj[i.value]
+            if( temp === undefined ){
+                obj[i.value] = 1
+            }else{
+                obj[i.value] = temp + 1
+            }
+            result[i.target] = obj
         }
     }
-    for(let i of data){
-        result.parents[i.parents] = result.parents[i.parents] + 1
-        result.nursery[i.has_nurs] = result.nursery[i.has_nurs] + 1
-        result.form[i.form] = result.form[i.form] + 1
-        result.children[i.children] = result.children[i.children] + 1
-        result.housing[i.housing] = result.housing[i.housing] + 1
-        result.finance[i.finance] = result.finance[i.finance] + 1
-        result.social[i.social] = result.social[i.social] + 1
-        result.health[i.health] = result.health[i.health] + 1
-    }
-    return transformData(result, state)
+    return trasnformObject(result);
 }
 
-function filterByTarget(data, target){
-    return data.filter(obj => obj.target === target)
-}
-
-function transformData(data, state){
+function trasnformObject(data){
     let result = []
     for(let [key, value] of Object.entries(data)){
-        result.push([{
-            '': state,
+        result.push({
+            '': key,
             ...value
-        }])
+        })
     }
     return result
 }
@@ -119,6 +88,7 @@ function mergeTwoLists(list, list2){
     return result
 }
 
-exports.calculateNumberOfSpecificValues = calculateNumberOfSpecificValues
-exports.mapDataToObject2 = mapDataToObject2
+exports.mapDataToObject = mapDataToObject
 exports.zxc = zxc
+exports.sumAllSocialConditionPerTarget =sumAllSocialConditionPerTarget
+exports.sumAllFinanceConditionPerTarget =sumAllFinanceConditionPerTarget

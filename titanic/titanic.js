@@ -6,12 +6,10 @@ function mapDataToObjects(data) {
             continue;
         }
         let arr = data[i].split(',');
-        let lastName = arr[2].split(" ")
-        lastName = lastName[lastName.length - 1]
         titanicObjects.push({
             survived: parseInt(arr[0]),
             pClass: parseInt(arr[1]),
-            name: arr[2].replace(lastName, ""),
+            name: arr[2],
             sex: arr[3],
             age: parseInt(arr[4]),
             siblings: parseInt(arr[5]),
